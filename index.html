@@ -59,14 +59,24 @@
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
         }
         
-        .bento-card {
-            @apply glass-panel rounded-[2.5rem] p-12 flex flex-col justify-between transition-all duration-500;
-        }
-        .bento-card:hover {
-            border-color: var(--primary);
-            transform: translateY(-4px);
-            box-shadow: 0 20px 40px -10px rgba(255, 79, 0, 0.15);
-        }
+       .bento-card {
+    background: rgba(255, 255, 255, 0.08); /* glass-panel effect */
+    backdrop-filter: blur(12px);
+    border-radius: 2.5rem;
+    padding: 3rem;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    transition: all 0.5s ease;
+}
+
+.bento-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px -10px rgba(255, 79, 0, 0.15);
+}
 
         /* --- MATH VISUALIZER --- */
         .math-box {
