@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth bg-[#050505]">
+<html lang="en" class="scroll-smooth" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZIDD | The Protocol</title>
+    <title>ZIDD | Execute or Forfeit</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -11,307 +11,348 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            /* Theme: International Orange + Deep Void */
-            --primary: #FF4F00; /* High-Vis Orange */
-            --bg: #030303;
-            --surface: #0A0A0A;
-            --text-muted: #888888;
+            /* DARK THEME (Default) */
+            --bg-body: #050505;
+            --bg-card: rgba(20, 20, 20, 0.6);
+            --text-main: #ffffff;
+            --text-muted: #9ca3af;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --primary: #FF4F00;
+            --glow: rgba(255, 79, 0, 0.12);
+            --math-box: #0a0a0a;
+            --math-border: #333;
+        }
+
+        [data-theme="light"] {
+            /* LIGHT THEME */
+            --bg-body: #f3f4f6;
+            --bg-card: rgba(255, 255, 255, 0.7);
+            --text-main: #111827;
+            --text-muted: #4b5563;
+            --border-color: rgba(0, 0, 0, 0.08);
+            --primary: #FF4F00; /* Keep orange as brand color */
+            --glow: rgba(255, 79, 0, 0.08);
+            --math-box: #ffffff;
+            --math-border: #e5e7eb;
         }
 
         body { 
             font-family: 'Inter', sans-serif; 
-            color: white; 
-            background: var(--bg); 
+            background-color: var(--bg-body);
+            color: var(--text-main);
             overflow-x: hidden; 
+            transition: background-color 0.5s ease, color 0.5s ease;
         }
 
         .font-mono { font-family: 'JetBrains Mono', monospace; }
 
-        /* --- UI ELEMENTS --- */
-        .badge {
-            background: rgba(255, 79, 0, 0.1);
-            border: 1px solid rgba(255, 79, 0, 0.3);
-            color: var(--primary);
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: black;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            transition: all 0.3s ease;
-        }
-        .btn-primary:hover {
-            background: white;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px -10px rgba(255, 255, 255, 0.3);
-        }
-
-        /* --- CARDS & GLASS --- */
+        /* --- BENTO GRIDS --- */
         .glass-panel {
-            background: linear-gradient(180deg, rgba(20,20,20,0.6) 0%, rgba(10,10,10,0.8) 100%);
-            border: 1px solid rgba(255,255,255,0.08);
-            backdrop-filter: blur(20px);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(24px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
         }
         
         .bento-card {
-            @apply glass-panel rounded-3xl p-10 flex flex-col justify-between transition-all duration-500;
+            @apply glass-panel rounded-[2.5rem] p-12 flex flex-col justify-between transition-all duration-500;
         }
         .bento-card:hover {
             border-color: var(--primary);
             transform: translateY(-4px);
+            box-shadow: 0 20px 40px -10px rgba(255, 79, 0, 0.15);
+        }
+
+        /* --- MATH VISUALIZER --- */
+        .math-box {
+            background: var(--math-box);
+            border: 1px solid var(--math-border);
+            padding: 24px;
+            border-radius: 20px;
+            text-align: center;
+            min-width: 150px;
+            transition: all 0.3s ease;
+        }
+
+        /* --- ARROWS & FLOW --- */
+        .arrow-right {
+            width: 40px; height: 2px; background: var(--text-muted); position: relative;
+        }
+        .arrow-right::after {
+            content: ''; position: absolute; right: 0; top: -4px;
+            border-top: 5px solid transparent; border-bottom: 5px solid transparent;
+            border-left: 5px solid var(--text-muted);
+        }
+        .flow-line {
+            width: 2px; height: 80px;
+            background: linear-gradient(to bottom, transparent, var(--primary), transparent);
+            margin: 0 auto;
+            opacity: 0.5;
         }
 
         /* --- MOCKUPS --- */
         .device-frame {
-            border-radius: 2.5rem;
-            border: 8px solid #1A1A1A;
+            border-radius: 3rem;
+            border: 10px solid #1A1A1A;
             background: #000;
             overflow: hidden;
-            box-shadow: 0 40px 80px -20px rgba(0,0,0,0.8);
+            box-shadow: 0 40px 80px -20px rgba(0,0,0,0.5);
             position: relative;
+            max-width: 320px;
+            margin: 0 auto;
+            transition: transform 0.5s ease;
         }
         .device-frame img { width: 100%; height: auto; display: block; }
 
-        /* --- GLOW EFFECTS --- */
+        /* --- UTILS --- */
+        .text-primary { color: var(--primary); }
+        .bg-primary { background-color: var(--primary); }
+        .text-muted { color: var(--text-muted); }
+        
         .ambient-glow {
-            position: absolute;
-            width: 800px;
-            height: 800px;
-            background: radial-gradient(circle, rgba(255, 79, 0, 0.08) 0%, rgba(0,0,0,0) 60%);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 0;
+            position: absolute; width: 800px; height: 800px;
+            background: radial-gradient(circle, var(--glow) 0%, rgba(0,0,0,0) 60%);
+            border-radius: 50%; pointer-events: none; z-index: 0;
         }
 
-        /* Typography Tweaks */
-        h1, h2, h3 { letter-spacing: -0.04em; }
+        /* Toggle Button */
+        .theme-toggle {
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+        }
     </style>
 </head>
-<body class="selection:bg-[#FF4F00] selection:text-black">
+<body class="selection:bg-[#FF4F00] selection:text-white">
 
     <nav class="fixed w-full z-50 px-8 py-6 flex justify-between items-center mix-blend-difference">
-        <div class="flex items-center gap-2">
-            <div class="w-3 h-3 bg-[#FF4F00] rounded-sm"></div>
-            <span class="font-bold text-xl tracking-tight">ZIDD</span>
+        <div class="flex items-center gap-3">
+            <div class="w-4 h-4 bg-[#FF4F00] rounded-sm"></div>
+            <span class="font-black text-2xl tracking-tight">ZIDD</span>
         </div>
-        <div class="font-mono text-[10px] opacity-50 uppercase tracking-widest hidden md:block">
-            Batch W26 // 2025
+        
+        <div class="flex items-center gap-6">
+            <div class="font-mono text-[10px] opacity-60 uppercase tracking-widest hidden md:block">
+                Protocol V1.0
+            </div>
+            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle Theme">
+                <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                <svg id="sun-icon" class="hidden" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            </button>
         </div>
     </nav>
 
-    <section class="h-screen w-full flex flex-col justify-center items-center relative px-4">
+    <section class="min-h-screen w-full flex flex-col justify-center items-center relative px-4 pt-20">
         <div class="ambient-glow top-[-20%]"></div>
         
         <div class="z-10 text-center flex flex-col items-center max-w-5xl">
             
             <div class="gs-hero opacity-0 mb-8">
-                <span class="font-mono text-[10px] tracking-[0.3em] uppercase border border-white/10 px-4 py-2 rounded-full bg-white/5">
-                    The Behavioral Protocol
+                <span class="font-mono text-[11px] tracking-[0.3em] uppercase text-primary font-bold bg-primary/10 px-4 py-2 rounded-full border border-primary/20">
+                    The Logic is Simple
                 </span>
             </div>
 
-            <h1 class="text-[11vw] leading-[0.85] font-black uppercase text-white gs-hero opacity-0">
+            <h1 class="text-[10vw] leading-[0.9] font-black uppercase gs-hero opacity-0">
                 Execute<br>
-                <span class="text-[#333] transition-colors duration-500 hover:text-[#FF4F00]">Or Forfeit.</span>
+                <span class="text-muted transition-colors duration-500 hover:text-[#FF4F00]">Or Forfeit.</span>
             </h1>
 
-            <p class="mt-10 text-xl md:text-2xl text-gray-500 max-w-xl font-medium gs-hero opacity-0">
-                The first habit tracker with a <span class="text-white">burn rate.</span><br>
-                We monetize your excuses.
+            <p class="mt-10 text-xl text-muted max-w-xl font-medium gs-hero opacity-0">
+                Laziness is now a luxury you can't afford. <span class="text-primary font-bold"></span>
             </p>
 
-            <div class="mt-12 gs-hero opacity-0">
-                <button class="btn-primary px-10 py-5 rounded-full text-sm">
-                    Initiate Protocol
-                </button>
+            <div class="mt-16 flex flex-col md:flex-row items-center gap-6 md:gap-8 gs-hero opacity-0">
+                <div class="math-box">
+                    <div class="text-muted text-[10px] font-mono uppercase mb-2">Total Pledge</div>
+                    <div class="text-3xl font-black">₹500</div>
+                </div>
+                <div class="font-mono text-muted text-2xl">÷</div>
+                <div class="math-box">
+                    <div class="text-muted text-[10px] font-mono uppercase mb-2">Duration</div>
+                    <div class="text-3xl font-black">10 Days</div>
+                </div>
+                <div class="hidden md:block arrow-right"></div>
+                <div class="md:hidden text-primary text-xl">↓</div>
+                <div class="math-box" style="border-color: var(--primary); background: rgba(255,79,0,0.05);">
+                    <div class="text-primary text-[10px] font-mono uppercase mb-2">Daily Risk</div>
+                    <div class="text-3xl font-black text-primary">₹50 / Day</div>
+                </div>
             </div>
-        </div>
-        
-        <div class="absolute bottom-10 flex flex-col items-center gap-2 opacity-30 animate-pulse">
-            <span class="font-mono text-[9px] uppercase tracking-widest">Scroll to Commit</span>
-            <div class="w-px h-8 bg-white"></div>
+
+            <p class="mt-8 font-mono text-xs text-muted uppercase tracking-widest gs-hero opacity-0">
+                Miss a day? Money Burns.
+            </p>
         </div>
     </section>
 
-    <section class="py-32 px-6 flex justify-center">
+    <section class="py-32 px-6 flex justify-center bg-body">
         <div class="max-w-7xl w-full">
             <div class="flex items-center gap-4 mb-16">
-                <div class="w-12 h-px bg-[#FF4F00]"></div>
-                <h2 class="font-mono text-xs uppercase tracking-widest text-[#FF4F00]">The Disconnect</h2>
+                <div class="w-12 h-1 bg-primary rounded-full"></div>
+                <h2 class="font-mono text-xs uppercase tracking-widest text-primary font-bold">The Market Failure</h2>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 h-auto md:h-[600px]">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
                 
                 <div class="col-span-1 md:col-span-8 bento-card gs-scroll">
-                    <div class="mb-8">
-                        <div class="font-mono text-xs text-gray-500 mb-4">01 // THE PSYCHOLOGY</div>
-                        <h3 class="text-5xl md:text-7xl font-bold leading-none mb-6">Willpower is<br>a depreciating asset.</h3>
+                    <div>
+                        <div class="font-mono text-xs text-muted mb-4">WHY APPS FAIL</div>
+                        <h3 class="text-5xl font-bold leading-tight mb-6">No Risk = No Result.</h3>
                     </div>
-                    <p class="text-xl text-gray-400 max-w-lg">
-                        You can't "gamify" discipline with badges. 
-                        Without <strong class="text-white">downside risk</strong>, your brain will always choose the path of least resistance.
+                    <p class="text-xl text-muted max-w-lg leading-relaxed">
+                        Duolingo sends you a sad owl. Strava gives you a kudos. 
+                        Zidd <span class="font-bold text-primary">takes your money.</span> 
+                        <br><br>
+                        Which one makes you get out of bed?
                     </p>
                 </div>
 
-                <div class="col-span-1 md:col-span-4 bento-card items-center justify-center text-center gs-scroll relative overflow-hidden group">
-                    <div class="absolute inset-0 bg-[#FF4F00] opacity-0 group-hover:opacity-10 transition-opacity duration-500"></div>
-                    <h3 class="text-[9rem] font-black text-white leading-none tracking-tighter group-hover:scale-110 transition-transform duration-500">90<span class="text-[#FF4F00] text-6xl">%</span></h3>
-                    <p class="font-mono text-xs text-gray-500 mt-4 uppercase tracking-widest">Habit Abandonment</p>
-                </div>
-
-                <div class="col-span-1 md:col-span-12 bento-card flex-row items-center justify-between !py-8 gs-scroll">
-                    <div class="flex gap-6 items-center">
-                        <div class="w-2 h-2 rounded-full bg-[#FF4F00]"></div>
-                        <p class="text-lg font-medium text-gray-300">Existing tools sell you "Suggestions". Zidd sells you <span class="text-white font-bold">Consequences</span>.</p>
-                    </div>
-                    <div class="hidden md:block font-mono text-xs opacity-30">[SOURCE: BEHAVIORAL ECONOMICS 101]</div>
+                <div class="col-span-1 md:col-span-4 bento-card items-center justify-center text-center gs-scroll" style="background: var(--primary); border: none;">
+                    <h3 class="text-8xl font-black text-white leading-none tracking-tighter">90%</h3>
+                    <p class="font-mono text-xs text-white/80 font-bold mt-4 uppercase tracking-widest">Fail without stakes</p>
                 </div>
 
             </div>
         </div>
     </section>
 
-    <section class="py-32 px-6 bg-[#080808]">
-        <div class="max-w-7xl mx-auto">
-            <div class="flex items-center gap-4 mb-24">
-                <div class="w-12 h-px bg-[#FF4F00]"></div>
-                <h2 class="font-mono text-xs uppercase tracking-widest text-[#FF4F00]">The Mechanism</h2>
+    <section class="py-32 px-6 bg-body/50">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex items-center gap-4 mb-24 justify-center">
+                <div class="w-12 h-1 bg-[#FF4F00] rounded-full"></div>
+                <h2 class="font-mono text-xs uppercase tracking-widest text-[#FF4F00] font-bold">The Protocol Flow</h2>
+                <div class="w-12 h-1 bg-[#FF4F00] rounded-full"></div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-16">
-                
-                <div class="gs-scroll group">
-                    <div class="mb-10 pl-6 border-l-2 border-[#222] group-hover:border-[#FF4F00] transition-colors">
-                        <span class="font-mono text-xs text-gray-500 mb-2 block">PHASE 01</span>
-                        <h3 class="text-3xl font-bold mb-4">Stake Capital.</h3>
-                        <p class="text-gray-400 text-sm leading-relaxed">
-                            Select a habit. Pledge ₹500. 
-                            The money is locked in escrow instantly.
-                        </p>
-                    </div>
-                    <div class="device-frame max-w-[300px] mx-auto group-hover:-translate-y-4 transition-transform duration-500">
-                        <img src="Screenshot 2025-12-22 at 7.56.51 PM.png" alt="Pledge UI">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-20 items-center gs-scroll">
+                <div class="bento-card h-full justify-center">
+                    <div>
+                        <span class="font-mono text-xs tracking-widest text-muted mb-6 block border-l-2 border-[#FF4F00] pl-4">PHASE 01</span>
+                        <h3 class="text-4xl font-black uppercase mb-6">Choose Your Pain.</h3>
+                        <p class="text-muted text-lg">Select a habit category. Gym, Study, or Wake Up Early. Define clearly what you want to achieve.</p>
                     </div>
                 </div>
-
-                <div class="gs-scroll group" style="transition-delay: 100ms;">
-                    <div class="mb-10 pl-6 border-l-2 border-[#222] group-hover:border-[#FF4F00] transition-colors">
-                        <span class="font-mono text-xs text-gray-500 mb-2 block">PHASE 02</span>
-                        <h3 class="text-3xl font-bold mb-4">Beat the Clock.</h3>
-                        <p class="text-gray-400 text-sm leading-relaxed">
-                            The timer runs. The risk is real.
-                            Monitor your active exposure in real-time.
-                        </p>
-                    </div>
-                    <div class="device-frame max-w-[300px] mx-auto group-hover:-translate-y-4 transition-transform duration-500 shadow-[#FF4F00]/20">
-                        <img src="Screenshot 2025-12-22 at 7.56.30 PM.png" alt="Dashboard UI">
-                    </div>
-                </div>
-
-                <div class="gs-scroll group" style="transition-delay: 200ms;">
-                    <div class="mb-10 pl-6 border-l-2 border-[#222] group-hover:border-[#FF4F00] transition-colors">
-                        <span class="font-mono text-xs text-gray-500 mb-2 block">PHASE 03</span>
-                        <h3 class="text-3xl font-bold mb-4">Verify or Burn.</h3>
-                        <p class="text-gray-400 text-sm leading-relaxed">
-                            Upload proof. AI Audits it. 
-                            Success = Refund. Failure = <span class="text-[#FF4F00]">Incineration.</span>
-                        </p>
-                    </div>
-                    <div class="device-frame max-w-[300px] mx-auto group-hover:-translate-y-4 transition-transform duration-500">
-                        <img src="Screenshot 2025-12-22 at 7.57.53 PM.png" alt="Success UI">
-                    </div>
-                </div>
-
+                <div class="flex justify-center"><div class="device-frame"><img src="Screenshot 2025-12-22 at 7.56.43 PM.png" alt="Category UI"></div></div>
             </div>
-        </div>
-    </section>
 
-    <section class="py-32 px-6">
-        <div class="max-w-7xl mx-auto">
-            <h2 class="font-mono text-xs uppercase tracking-widest text-[#FF4F00] mb-16 text-center">Under the Hood</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div class="bento-card h-[400px] gs-scroll">
-                    <div class="flex justify-between items-start">
-                        <h3 class="text-3xl font-bold">GPT-4o Vision Audit</h3>
-                        <span class="badge px-3 py-1 rounded text-[10px] font-mono uppercase">Context Aware</span>
+            <div class="flow-container gs-scroll"><div class="flow-arrow-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg></div></div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-20 items-center gs-scroll">
+                <div class="flex justify-center order-2 md:order-1"><div class="device-frame"><img src="Screenshot 2025-12-22 at 7.56.51 PM.png" alt="Pledge UI"></div></div>
+                <div class="bento-card h-full justify-center order-1 md:order-2">
+                    <div>
+                        <span class="font-mono text-xs tracking-widest text-muted mb-6 block border-l-2 border-[#FF4F00] pl-4">PHASE 02</span>
+                        <h3 class="text-4xl font-black uppercase mb-6">Lock the Stake.</h3>
+                        <p class="text-muted text-lg">Pledge real money (e.g. ₹500). Higher stakes = higher commitment. Funds are <span class="text-[#FF4F00] font-bold">locked instantly</span>.</p>
                     </div>
-                    <div class="mt-8 flex gap-4 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
-                        <img src="Screenshot 2025-12-22 at 7.57.31 PM.png" class="h-32 rounded-lg border border-white/10">
-                        <img src="Screenshot 2025-12-22 at 7.57.10 PM.png" class="h-32 rounded-lg border border-white/10">
-                    </div>
-                    <p class="text-gray-500 mt-auto text-sm">Automated verification of gym equipment, handwriting, and nutritional context.</p>
                 </div>
+            </div>
 
-                <div class="bento-card h-[400px] gs-scroll" style="transition-delay: 100ms;">
-                    <div class="flex justify-between items-start">
-                        <h3 class="text-3xl font-bold">Anti-Fraud Layer</h3>
-                        <span class="badge px-3 py-1 rounded text-[10px] font-mono uppercase">Security</span>
+            <div class="flow-container gs-scroll"><div class="flow-arrow-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg></div></div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-20 items-center gs-scroll">
+                <div class="bento-card h-full justify-center">
+                    <div>
+                        <span class="font-mono text-xs tracking-widest text-muted mb-6 block border-l-2 border-[#FF4F00] pl-4">PHASE 03</span>
+                        <h3 class="text-4xl font-black uppercase mb-6">Set the Clock.</h3>
+                        <p class="text-muted text-lg">Deadlines drive action. Set the exact time by which you must submit proof. No snooze buttons.</p>
                     </div>
-                    <div class="flex-1 flex items-center justify-center">
-                        <div class="text-center">
-                            <div class="text-5xl mb-2">🔐</div>
-                            <div class="font-mono text-[#FF4F00] text-sm">LIVENESS_CHECK_ACTIVE</div>
-                        </div>
+                </div>
+                <div class="flex justify-center"><div class="device-frame"><img src="Screenshot 2025-12-22 at 7.57.10 PM.png" alt="Deadline UI"></div></div>
+            </div>
+
+            <div class="flow-container gs-scroll"><div class="flow-arrow-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg></div></div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-20 items-center gs-scroll">
+                <div class="flex justify-center order-2 md:order-1"><div class="device-frame shadow-[#FF4F00]/20"><img src="Screenshot 2025-12-22 at 7.56.30 PM.png" alt="Dashboard UI"></div></div>
+                <div class="bento-card h-full justify-center order-1 md:order-2">
+                    <div>
+                        <span class="font-mono text-xs tracking-widest text-muted mb-6 block border-l-2 border-[#FF4F00] pl-4">PHASE 04</span>
+                        <h3 class="text-4xl font-black uppercase mb-6">The Pressure.</h3>
+                        <p class="text-muted text-lg">Your dashboard is a war room. Watch the timer count down and your money sitting on the edge.</p>
                     </div>
-                    <p class="text-gray-500 mt-auto text-sm">Prevents gallery injection via randomized OTP challenges and metadata forensics.</p>
+                </div>
+            </div>
+
+            <div class="flow-container gs-scroll"><div class="flow-arrow-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg></div></div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-20 items-center gs-scroll">
+                <div class="bento-card h-full justify-center">
+                    <div>
+                        <span class="font-mono text-xs tracking-widest text-muted mb-6 block border-l-2 border-[#FF4F00] pl-4">PHASE 05</span>
+                        <h3 class="text-4xl font-black uppercase mb-6">Proof of Work.</h3>
+                        <p class="text-muted text-lg">Upload photo evidence. Our AI checks context, timestamps, and geolocation to prevent cheating.</p>
+                    </div>
+                </div>
+                <div class="flex justify-center"><div class="device-frame"><img src="Screenshot 2025-12-22 at 7.57.31 PM.png" alt="Upload UI"></div></div>
+            </div>
+
+            <div class="flow-container gs-scroll"><div class="flow-arrow-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg></div></div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-20 items-center gs-scroll">
+                <div class="flex justify-center order-2 md:order-1"><div class="device-frame"><img src="Screenshot 2025-12-22 at 7.57.53 PM.png" alt="Success UI"></div></div>
+                <div class="bento-card h-full justify-center order-1 md:order-2">
+                    <div>
+                        <span class="font-mono text-xs tracking-widest text-muted mb-6 block border-l-2 border-[#FF4F00] pl-4">PHASE 06</span>
+                        <h3 class="text-4xl font-black uppercase mb-6">The Verdict.</h3>
+                        <p class="text-muted text-lg">
+                            <span class="text-[#22c55e] font-bold">Pass</span> = Money Returned.<br>
+                            <span class="text-[#FF4F00] font-bold">Fail</span> = Money Burned.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
     <section class="py-32 px-6 bg-white text-black">
-        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="font-mono text-xs uppercase tracking-widest text-gray-400 mb-16 text-center">The Business Model</h2>
             
-            <div class="gs-scroll">
-                <div class="flex items-center gap-4 mb-8">
-                    <div class="w-8 h-1 bg-black"></div>
-                    <h2 class="font-mono text-xs uppercase tracking-widest">Business Model</h2>
-                </div>
-                <div class="text-[12rem] font-black leading-none tracking-tighter">85<span class="text-[#FF4F00]">%</span></div>
-                <div class="text-4xl font-black uppercase tracking-tight mt-4">Paid Conversion</div>
-                <p class="text-xl text-gray-600 mt-8 font-medium">
-                    We don't sell data. We sell discipline.<br>
-                    Revenue is generated directly from human inconsistency.
-                </p>
-            </div>
-
-            <div class="space-y-6 gs-scroll">
-                <div class="bg-black text-white p-12 rounded-[2rem] hover:scale-[1.02] transition-transform">
-                    <div class="flex justify-between items-end">
-                        <div>
-                            <div class="text-[#FF4F00] font-mono text-xs mb-2">PRIMARY STREAM</div>
-                            <h3 class="text-4xl font-bold">The Stick</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                <div class="bg-black text-white p-12 rounded-[2.5rem] flex flex-col justify-between h-[400px] hover:scale-[1.02] transition-transform gs-scroll">
+                    <div>
+                        <div class="flex justify-between items-start mb-6">
+                            <h3 class="text-4xl font-black uppercase">The Stick</h3>
+                            <span class="font-mono text-[#FF4F00] text-xs border border-[#FF4F00] px-2 py-1 rounded">CORE</span>
                         </div>
-                        <div class="text-right">
-                            <div class="text-4xl font-black">80%</div>
-                            <div class="text-[10px] uppercase opacity-50">Of Forfeits</div>
-                        </div>
+                        <p class="text-gray-400 text-lg">We monetize failure.</p>
                     </div>
-                    <p class="text-gray-500 mt-6">High-margin revenue from failed goals.</p>
-                </div>
-
-                <div class="border-2 border-black p-12 rounded-[2rem] hover:bg-black hover:text-white transition-all duration-300">
-                    <div class="flex justify-between items-end">
-                        <div>
-                            <div class="text-gray-500 font-mono text-xs mb-2">SECONDARY STREAM</div>
-                            <h3 class="text-4xl font-bold">The Carrot</h3>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-xl font-bold">₹99/mo</div>
-                        </div>
+                    <div>
+                        <div class="w-full h-px bg-gray-800 mb-6"></div>
+                        <p class="text-gray-400 text-sm">
+                            We keep the money <strong>only</strong> when you fail. <br>
+                            If you hit your goal, you keep 100% of your pledge.
+                        </p>
                     </div>
-                    <p class="text-gray-500 mt-6">Pro Subscription for long-term tracking.</p>
                 </div>
-            </div>
 
+                <div class="border-2 border-black p-12 rounded-[2.5rem] flex flex-col justify-between h-[400px] hover:bg-black hover:text-white transition-all duration-300 group gs-scroll">
+                    <div>
+                        <div class="flex justify-between items-start mb-6">
+                            <h3 class="text-4xl font-black uppercase">The Service</h3>
+                            <span class="font-mono text-gray-500 text-xs border border-gray-300 px-2 py-1 rounded group-hover:border-white">ADD-ON</span>
+                        </div>
+                        <p class="text-gray-600 group-hover:text-gray-400 text-lg transition-colors">Success Fee.</p>
+                    </div>
+                    <div>
+                        <div class="w-full h-px bg-gray-300 group-hover:bg-gray-800 mb-6 transition-colors"></div>
+                        <p class="text-gray-600 group-hover:text-gray-400 text-sm transition-colors">
+                            Complete 100% of your streak? We charge a tiny <strong>5% service fee</strong> for the AI verification. You keep the rest.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </section>
 
@@ -319,16 +360,16 @@
         <div class="ambient-glow bottom-[-20%]"></div>
         
         <h2 class="text-[10vw] font-black uppercase leading-none mb-12 gs-scroll">
-            Let's Bet.
+            Bet on<br>Yourself.
         </h2>
 
         <div class="flex flex-col md:flex-row gap-6 gs-scroll z-10">
-            <div class="glass px-10 py-5 rounded-full text-xs font-bold uppercase tracking-widest flex items-center gap-3">
-                <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+            <div class="glass-panel px-10 py-5 rounded-full text-xs font-bold uppercase tracking-widest flex items-center gap-3">
+                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                 IIT Delhi Final Year
             </div>
-            <button class="bg-[#FF4F00] text-white px-12 py-5 rounded-full text-xs font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all shadow-xl shadow-orange-900/20">
-                Fund the Protocol
+            <button class="bg-primary text-white px-12 py-5 rounded-full text-xs font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all shadow-xl shadow-orange-900/20">
+                Take the Pledge
             </button>
         </div>
     </section>
@@ -359,6 +400,23 @@
                 ease: "power3.out"
             });
         });
+
+        // Light/Dark Toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const sun = document.getElementById('sun-icon');
+            const moon = document.getElementById('moon-icon');
+            
+            if (html.getAttribute('data-theme') === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                sun.classList.remove('hidden');
+                moon.classList.add('hidden');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                sun.classList.add('hidden');
+                moon.classList.remove('hidden');
+            }
+        }
     </script>
 </body>
 </html>
